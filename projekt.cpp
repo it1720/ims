@@ -21,11 +21,11 @@ class susenky : public Process
 	void Behavior()
 	{
 		Seize(susenky_linka);
-		Wait(10);
-		Wait(15);
-		Wait(30);
-		Wait(15);
-		Wait(30);
+		Wait(10); // priprava surovin
+		Wait(15); // kombinovani surovin
+		Wait(30); // formovani testa
+		Wait(15); // peceni
+		Wait(30); // chlazeni
 		Release(susenky_linka);
 		pocet_varek++;
 	}
@@ -36,9 +36,9 @@ class krem : public Process
 	void Behavior()
 	{
 		Seize(krem_linka);
-		Wait(10);
-		Wait(20);
-		Wait(20);
+		Wait(10); // priprava surovin
+		Wait(20); // kombinovani surovin
+		Wait(20); // chlazeni
 		Release(krem_linka);
 		pocet_kremu++;
 	}
@@ -52,7 +52,7 @@ class kontrolaKvality : public Process
 		{
 			if (sestavene > 0)
 			{
-				Wait(15);
+				Wait(15); // kontrola kvality
 				sestavene--;
 				kontrola++;
 			}
@@ -72,7 +72,7 @@ class baleni : public Process
 		{
 			if (kontrola > 0)
 			{
-				Wait(25);
+				Wait(25); //baleni do obalu
 				kontrola--;
 				zabaleno++;
 			}
@@ -94,7 +94,7 @@ class sestaveni : public Process
 			{
 				(new susenky)->Activate();
 				(new krem)->Activate();
-				Wait(15);
+				Wait(15); // spojeni kremu a susenek
 				pocet_varek--;
 				pocet_kremu--;
 				sestavene++;
@@ -120,7 +120,7 @@ class baleniDoKrabice : public Process
 			}
 			else if (zabaleno > 0)
 			{
-				Wait(30);
+				Wait(30); //baleni do krabice strojem
 				zabaleno--;
 				palet++;
 			}
@@ -140,7 +140,7 @@ class zamestnanciBali : public Process
 		{
 			zabaliZamestnanci--;
 			double tmptime = Uniform(10, 15);
-			Wait(tmptime);
+			Wait(tmptime); //baleni do krabice zamestnancem
 			krabicNaPalete++;
 			if (krabicNaPalete>100)
 			{
@@ -176,7 +176,7 @@ class oprava : public Process
 {
 	void Behavior()
 	{
-		Wait(Uniform(20, 40));
+		Wait(Uniform(20, 40)); // doba opravy
 		jeVPoruse = false;
 	}
 };
@@ -189,7 +189,7 @@ class porucha : public Process
 		{
 			if (!jeVPoruse)
 			{
-				Wait(Uniform(30, 60));
+				Wait(Uniform(30, 60)); // doba nez se udela porucha
 				(new oprava)->Activate();
 				jeVPoruse = true;
 			}
