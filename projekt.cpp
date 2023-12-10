@@ -201,10 +201,16 @@ class porucha : public Process
 	}
 };
 
-int main()
+int main(int argc, char* argv[])
 {
-	pocetZamestnancu = 4;
-	Init(0, 1500);
+	if (argc != 5)
+	{
+		cout << "Usage: ./projekt -t [Cas v minutach] -z [Pocet zamestnancu]" << endl;
+		return 0;
+	}
+	
+	pocetZamestnancu = atoi(argv[4]);
+	Init(0, double(atoi(argv[2])));
 	(new susenky)->Activate();
 	(new krem)->Activate();
 	(new sestaveni)->Activate();
@@ -214,14 +220,9 @@ int main()
 	(new zamestnanciLinka)->Activate();
 	(new porucha)->Activate();
 	Run();
-	cout << "Zabalil stroj: " << palet << endl;
-	cout << "Zabalili zamestnanci: " << paletZamestnanci << endl;
-	cout << "Varek: " << pocet_varek << endl;
-	cout << "Kremu: " << pocet_kremu << endl;
-	cout << "Sestaveno: " << sestavene << endl;
-	cout << "Kontrola: " << kontrola << endl;
-	cout << "Zabaleno: " << zabaleno << endl;
-	cout << "Palet: " << palet + paletZamestnanci << endl;
-	cout << "Zabali zamestnanci: " << zabaliZamestnanci << endl;
+	cout << "Zabalil stroj: " << palet << " palet" <<endl;
+	cout << "Zabalili zamestnanci: " << paletZamestnanci<< " palet" << endl;
+	cout << "Palet: " << palet + paletZamestnanci << " palet" << endl;
+	cout << "Chybi zabalit zamestnancum: " << zabaliZamestnanci << " krabic" <<endl;
 	return 0;
 }
