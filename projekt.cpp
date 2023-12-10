@@ -152,7 +152,7 @@ class zamestnanciBali : public Process
 	{
 		double tmptime = Uniform(7.5, 12.5);
 		Wait(tmptime);
-		// zabaliZamestnanci--;
+		zabaliZamestnanci--;
 		krabicNaPalete++;
 		pocetZamestnancu++;
 	}
