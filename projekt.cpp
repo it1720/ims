@@ -5,6 +5,9 @@ using namespace std;
 int pocet_varek = 0;
 int pocet_kremu = 0;
 int sestavene = 0;
+int kontrola = 0;
+int zabaleno = 0;
+bool funguje = true;
 Facility susenky_linka("Linka na susenky");
 Facility krem_linka("Linka na krem");
 
@@ -46,6 +49,49 @@ class krem : public Process
 	}
 };
 
+class kontrola_kvality : public Process
+{
+	void Behavior()
+	{
+		while (true)
+		{
+			if (sestavene > 0)
+			{
+				Wait(15);
+				sestavene--;
+				kontrola++;
+				cout << "Kontrola kvality" << endl;
+			}
+			else
+			{
+				Wait(1);
+			}
+		}
+	}
+};
+
+class baleni : public Process
+{
+	void Behavior()
+	{
+		while (true)
+		{
+			if (kontrola > 0)
+			{
+				Wait(25);
+				kontrola--;
+				zabaleno++;
+				cout << "Zabaleno: " << zabaleno << endl;
+			}
+			else
+			{
+				Wait(1);
+			}
+		}
+
+	}
+};
+
 class sestaveni : public Process
 {
 	void Behavior()
@@ -71,12 +117,23 @@ class sestaveni : public Process
 	}
 };
 
+class porucha : public Process
+{
+	void Behavior()
+	{
+		Exp(60);
+		funguje = false;
+	}
+};
+
 int main()
 {
 	Init(0, 550);
 	(new susenky)->Activate();
 	(new krem)->Activate();
 	(new sestaveni)->Activate();
+	(new kontrola_kvality)->Activate();
+	(new baleni)->Activate();
 	Run();
 	return 0;
 }
