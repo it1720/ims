@@ -224,5 +224,7 @@ int main(int argc, char* argv[])
 	cout << "Zabalili zamestnanci: " << paletZamestnanci<< " palet" << endl;
 	cout << "Palet: " << palet + paletZamestnanci << " palet" << endl;
 	cout << "Chybi zabalit zamestnancum: " << zabaliZamestnanci << " krabic" <<endl;
+	// susenky_linka.Output();
+	// krem_linka.Output();
 	return 0;
 }
