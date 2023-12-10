@@ -6,7 +6,6 @@ CXX = g++
 
 # Parametry překladače
 CXXFLAGS = -std=c++11 -Wall
-
 # Adresář pro zdrojové soubory
 SRC_DIR = .
 
