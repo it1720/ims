@@ -2,7 +2,6 @@
 #include "simlib.h"
 using namespace std;
 
-int dostaljsemse = 0;
 int pocetZamestnancu = 0;
 int pocet_varek = 0;
 int pocet_kremu = 0;
@@ -12,7 +11,7 @@ int zabaleno = 0;
 int palet = 0;
 int zabaliZamestnanci = 0;
 int krabicNaPalete = 0;
-bool funguje = true;
+int paletZamestnanci = 0;
 bool jeVPoruse = false;
 Facility susenky_linka("Linka na susenky");
 Facility krem_linka("Linka na krem");
@@ -22,19 +21,13 @@ class susenky : public Process
 	void Behavior()
 	{
 		Seize(susenky_linka);
-		// cout << "Priprava surovin testa" << endl;
 		Wait(10);
-		// cout << "Michani testa" << endl;
 		Wait(15);
-		// cout << "Rozvalovani testa" << endl;
 		Wait(30);
-		// cout << "Peceni" << endl;
 		Wait(15);
-		// cout << "Chlazeni" << endl;
 		Wait(30);
 		Release(susenky_linka);
 		pocet_varek++;
-		// cout << "Varek: " << pocet_varek << endl;
 	}
 };
 
@@ -43,15 +36,11 @@ class krem : public Process
 	void Behavior()
 	{
 		Seize(krem_linka);
-		// cout << "Priprava surovin kremu" << endl;
 		Wait(10);
-		// cout << "Michani kremu" << endl;
 		Wait(20);
-		// cout << "Ztuhnuti kremu v lednici" << endl;
 		Wait(20);
 		Release(krem_linka);
 		pocet_kremu++;
-		// cout << "Kremu: " << pocet_kremu << endl;
 	}
 };
 
@@ -66,7 +55,6 @@ class kontrolaKvality : public Process
 				Wait(15);
 				sestavene--;
 				kontrola++;
-				// cout << "Kontrola kvality" << endl;
 			}
 			else
 			{
@@ -106,12 +94,10 @@ class sestaveni : public Process
 			{
 				(new susenky)->Activate();
 				(new krem)->Activate();
-				// cout << "Sestaveni susenky" << endl;
 				Wait(15);
 				pocet_varek--;
 				pocet_kremu--;
 				sestavene++;
-				// cout << "Sestaveno: " << sestavene << endl;
 			}
 			else
 			{
@@ -150,10 +136,19 @@ class zamestnanciBali : public Process
 {
 	void Behavior()
 	{
-		double tmptime = Uniform(7.5, 12.5);
-		Wait(tmptime);
-		zabaliZamestnanci--;
-		krabicNaPalete++;
+		if (zabaliZamestnanci > 0)
+		{
+			zabaliZamestnanci--;
+			double tmptime = Uniform(10, 15);
+			Wait(tmptime);
+			krabicNaPalete++;
+			if (krabicNaPalete>100)
+			{
+				krabicNaPalete -= 100;
+				paletZamestnanci++;
+			}
+			
+		}
 		pocetZamestnancu++;
 	}
 };
@@ -166,9 +161,8 @@ class zamestnanciLinka : public Process
 		{
 			if (zabaliZamestnanci > 0 && pocetZamestnancu > 0)
 			{
-				// cout<<"Zabali zamestnanci: "<<zabaliZamestnanci<<endl;
-				(new zamestnanciBali)->Activate();
 				pocetZamestnancu--;
+				(new zamestnanciBali)->Activate();
 			}
 			else
 			{
@@ -195,9 +189,8 @@ class porucha : public Process
 		{
 			if (!jeVPoruse)
 			{
-				Wait(Uniform(40, 80));
+				Wait(Uniform(30, 60));
 				(new oprava)->Activate();
-				// cout << "Porucha" << endl;
 				jeVPoruse = true;
 			}
 			else
@@ -210,8 +203,8 @@ class porucha : public Process
 
 int main()
 {
-	pocetZamestnancu = 500;
-	Init(0, 500);
+	pocetZamestnancu = 4;
+	Init(0, 1500);
 	(new susenky)->Activate();
 	(new krem)->Activate();
 	(new sestaveni)->Activate();
@@ -222,15 +215,13 @@ int main()
 	(new porucha)->Activate();
 	Run();
 	cout << "Zabalil stroj: " << palet << endl;
-	palet += krabicNaPalete/100;
-	cout << "Zabalil zamestnanci: " << palet << endl;
+	cout << "Zabalili zamestnanci: " << paletZamestnanci << endl;
 	cout << "Varek: " << pocet_varek << endl;
 	cout << "Kremu: " << pocet_kremu << endl;
 	cout << "Sestaveno: " << sestavene << endl;
 	cout << "Kontrola: " << kontrola << endl;
 	cout << "Zabaleno: " << zabaleno << endl;
-	cout << "Palet: " << palet << endl;
-	cout << "Krabic na palete: " << krabicNaPalete << endl;
-	cout << dostaljsemse << endl;
+	cout << "Palet: " << palet + paletZamestnanci << endl;
+	cout << "Zabali zamestnanci: " << zabaliZamestnanci << endl;
 	return 0;
 }
